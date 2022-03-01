@@ -21,7 +21,7 @@ android {
         debug {
             buildConfigField("String", "BASE_URL", "\"https://gateway.marvel.com\"")
             buildConfigField("String", "apikey", "\"c2b3501b22712f468d8d7cccbf9f070c\"")
-            buildConfigField("String", "hash", "\"b0a387320dfd0f339400fccc21fc701431521e2c\"")
+            buildConfigField("String", "hash", "\"a571667fd08fbda87786723c10705cff\"")
 
         }
         release {
@@ -66,6 +66,9 @@ dependencies {
     //Toothpick - Dependency injection
     def toothPickVersion = '3.1.0'
     implementation "com.github.stephanenicolas.toothpick:ktp:$toothPickVersion"
+    implementation "com.github.stephanenicolas.toothpick:smoothie-lifecycle-viewmodel-ktp:$toothPickVersion"
+    implementation "com.github.stephanenicolas.toothpick:smoothie-lifecycle-ktp:$toothPickVersion"
+    implementation "com.github.stephanenicolas.toothpick:smoothie-lifecycle:$toothPickVersion"
     kapt "com.github.stephanenicolas.toothpick:toothpick-compiler:$toothPickVersion"
 
     // Android navigation
@@ -81,6 +84,11 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
     implementation "com.squareup.okhttp3:okhttp:$okHttpVersion"
     implementation "com.squareup.okhttp3:logging-interceptor:$okHttpVersion"
+
+    // Glide
+    def glideVersion = '4.13.0'
+    implementation "com.github.bumptech.glide:glide:$glideVersion"
+    annotationProcessor "com.github.bumptech.glide:compiler:$glideVersion"
 
     // Retrofit Coroutines Support
     def retrofitCoroutinesAdapter = "0.9.2"

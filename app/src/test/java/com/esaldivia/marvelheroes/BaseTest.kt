@@ -1,5 +1,6 @@
 package com.esaldivia.marvelheroes
 
+import com.esaldivia.marvelheroes.common.Constants
 import org.junit.After
 import org.junit.Before
 import org.junit.runner.RunWith
@@ -15,6 +16,6 @@ abstract class BaseTest {
 
     @After
     fun __tearDown() {
-        KTP.closeScope("root")
+        KTP.closeScope(Constants.MARVEL_APP)
     }
 }

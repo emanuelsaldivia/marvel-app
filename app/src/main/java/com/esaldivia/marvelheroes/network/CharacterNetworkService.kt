@@ -11,7 +11,6 @@ interface CharacterNetworkService {
     @GET("/v1/public/characters")
     suspend fun getCharactersFromApi(
         @Query("ts") timeStamp: Int = 1,
-        @Query("nameStartsWith") name: String? = null,
         @Query("offset") offset: Int = 0
     ): Response<MarvelDataWrapper<CharacterNetworkDto>>
 }

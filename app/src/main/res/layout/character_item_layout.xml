@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/size_1"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:id="@+id/characterThumbnail"
+        android:layout_width="@dimen/image_item_width"
+        android:layout_height="@dimen/image_item_height"
+        android:layout_margin="@dimen/size_0_5"
+        android:src="@drawable/marvel_logo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/character_thumbnail_placeholder" />
+
+    <TextView
+        android:id="@+id/characterName"
+        android:layout_width="@dimen/size_0"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/size_1"
+        android:text="@string/name_placeholder"
+        app:layout_constraintStart_toEndOf="@+id/characterThumbnail"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/characterDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/characterName"
+        app:layout_constraintStart_toEndOf="@id/characterThumbnail"
+        android:layout_marginStart="@dimen/size_0_5"
+        android:textColor="@android:color/black"
+        android:text="@string/description"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

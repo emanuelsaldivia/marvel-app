@@ -10,7 +10,7 @@ import toothpick.ktp.KTP
 abstract class BaseTest {
     @Before
     fun __setUp() {
-        KTP.openApplicationScope().inject(this)
+        KTP.openMarvelScope().inject(this)
     }
 
     @After

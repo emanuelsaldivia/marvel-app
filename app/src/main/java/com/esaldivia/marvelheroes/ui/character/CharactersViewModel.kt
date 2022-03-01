@@ -1,4 +1,4 @@
-package com.esaldivia.marvelheroes.ui.characterlist
+package com.esaldivia.marvelheroes.ui.character
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,17 +9,16 @@ import com.esaldivia.marvelheroes.data.model.character.Character
 import com.esaldivia.marvelheroes.data.repository.CharacterRepository
 import com.esaldivia.marvelheroes.di.CoroutineDispatcher
 import com.esaldivia.marvelheroes.network.Outcome
-import com.esaldivia.marvelheroes.openApplicationScope
+import com.esaldivia.marvelheroes.openMarvelScope
 import kotlinx.coroutines.launch
 import toothpick.ktp.KTP
 import toothpick.ktp.delegate.inject
-import java.sql.Timestamp
 
 class CharactersViewModel : ViewModel() {
     private val characterRepository: CharacterRepository by inject()
 
     init {
-        KTP.openApplicationScope().inject(this)
+        KTP.openMarvelScope().inject(this)
     }
 
     private val _charactersListLiveData = MutableLiveData<Resource<List<Character>?>>()
@@ -29,8 +28,7 @@ class CharactersViewModel : ViewModel() {
     fun getCharacterList() {
         viewModelScope.launch(CoroutineDispatcher.IO){
             _charactersListLiveData.postValue(Resource.Loading())
-            val timestamp = Timestamp(System.currentTimeMillis())
-            when (val characterOutcome = characterRepository.getCharacters(timestamp.nanos)) {
+            when (val characterOutcome = characterRepository.getCharacters()) {
                 is Outcome.Success -> {
                     val characterListResource = Resource.Success(characterOutcome.value)
                     _charactersListLiveData.postValue(characterListResource)

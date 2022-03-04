@@ -3,10 +3,12 @@ package com.esaldivia.marvelheroes.data.repository
 import com.esaldivia.marvelheroes.data.model.character.Character
 import com.esaldivia.marvelheroes.network.CharacterNetworkService
 import com.esaldivia.marvelheroes.network.Outcome
+import com.esaldivia.marvelheroes.usecase.ImageUseCase
 import javax.inject.Inject
 
 class CharacterRepository @Inject constructor(
-    private val characterNetwork: CharacterNetworkService
+    private val characterNetwork: CharacterNetworkService,
+    private val imageUseCase: ImageUseCase
 ) : NetworkRepository() {
 
     suspend fun getCharacters(
@@ -24,7 +26,7 @@ class CharacterRepository @Inject constructor(
                         it.id,
                         it.name,
                         it.description,
-                        it.thumbnail?.path
+                        it.thumbnail?.let { image -> imageUseCase.getSmallPortraitImageUri(image) }
                     )
                 }
 

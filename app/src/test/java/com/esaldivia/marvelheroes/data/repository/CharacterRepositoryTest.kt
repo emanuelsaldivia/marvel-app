@@ -7,6 +7,7 @@ import com.esaldivia.marvelheroes.data.model.character.Character
 import com.esaldivia.marvelheroes.data.model.character.CharacterNetworkDto
 import com.esaldivia.marvelheroes.network.CharacterNetworkService
 import com.esaldivia.marvelheroes.network.Outcome
+import com.esaldivia.marvelheroes.usecase.ImageUseCase
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -30,6 +31,7 @@ class CharacterRepositoryTest {
     private lateinit var response: Response<MarvelDataWrapper<CharacterNetworkDto>>
     private lateinit var marvelDataWrapper: MarvelDataWrapper<CharacterNetworkDto>
     private lateinit var dataNetworkDto: DataNetworkDto<CharacterNetworkDto>
+    private lateinit var imageUseCase: ImageUseCase
     private val characterList: List<Character> = listOf(Character(1, "name", "description", "path"))
 
     @Before
@@ -43,11 +45,15 @@ class CharacterRepositoryTest {
         characterNetworkService = mockk {
             coEvery { getCharactersFromApi(any(), any()) } returns response
         }
+        imageUseCase = mockk {
+            every { getSmallPortraitImageUri(any()) } returns "path"
+        }
 
         KTP.openScope(CharacterRepositoryTest::class.java)
             .installTestModules(module {
-            bind<CharacterNetworkService>().toInstance(characterNetworkService)
-        }).inject(this)
+                bind<CharacterNetworkService>().toInstance(characterNetworkService)
+                bind<ImageUseCase>().toInstance(imageUseCase)
+            }).inject(this)
     }
 
     @After
@@ -81,7 +87,7 @@ class CharacterRepositoryTest {
 
         assertTrue(result is Outcome.Success)
         assertNull((result as Outcome.Success).value)
-        coVerify { characterNetworkService.getCharactersFromApi(1234,0) }
+        coVerify { characterNetworkService.getCharactersFromApi(1234, 0) }
         verify { response.body() }
         verify(exactly = 0) { marvelDataWrapper.data }
     }
@@ -166,6 +172,7 @@ class CharacterRepositoryTest {
     private fun mockImageNetworkDto(): ImageNetworkDto {
         val image: ImageNetworkDto = mockk {
             every { path } returns "path"
+            every { extension } returns "jpg"
         }
         return image
     }

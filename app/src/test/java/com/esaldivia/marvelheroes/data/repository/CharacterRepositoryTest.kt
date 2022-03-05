@@ -28,11 +28,13 @@ import kotlin.test.*
 class CharacterRepositoryTest {
     private val characterRepository: CharacterRepository by inject()
     private lateinit var characterNetworkService: CharacterNetworkService
-    private lateinit var response: Response<MarvelDataWrapper<CharacterNetworkDto>>
+    private lateinit var charactersResponse: Response<MarvelDataWrapper<CharacterNetworkDto>>
+    private lateinit var characterResponse: Response<MarvelDataWrapper<CharacterNetworkDto>>
     private lateinit var marvelDataWrapper: MarvelDataWrapper<CharacterNetworkDto>
     private lateinit var dataNetworkDto: DataNetworkDto<CharacterNetworkDto>
     private lateinit var imageUseCase: ImageUseCase
-    private val characterList: List<Character> = listOf(Character(1, "name", "description", "path"))
+    private val character = Character(1, "name", "description", "path")
+    private val characterList: List<Character> = listOf(character)
 
     @Before
     fun setUp() {
@@ -41,12 +43,20 @@ class CharacterRepositoryTest {
         val characterNetworkDtoList: List<CharacterNetworkDto> = listOf(characterNetworkDto)
         dataNetworkDto = mockDataNetworkDto(characterNetworkDtoList)
         marvelDataWrapper = mockDataWrapper(dataNetworkDto)
-        response = mockResponse(marvelDataWrapper)
+        charactersResponse = mockResponse(marvelDataWrapper)
+        characterResponse = mockk {
+            every {
+                hint(MarvelDataWrapper::class)
+                body()
+            } returns marvelDataWrapper
+            every { isSuccessful } returns true
+        }
         characterNetworkService = mockk {
-            coEvery { getCharacters(any(), any()) } returns response
+            coEvery { getCharacters(any(), any()) } returns charactersResponse
+            coEvery { getCharacter(any(), any()) } returns characterResponse
         }
         imageUseCase = mockk {
-            every { getSmallPortraitImageUri(any()) } returns "path"
+            every { getLargeLandscapeImageUri(any()) } returns "path"
         }
 
         KTP.openScope(CharacterRepositoryTest::class.java)
@@ -81,14 +91,14 @@ class CharacterRepositoryTest {
 
     @Test
     fun `getCharacters with null body returns null`() = runBlockingTest {
-        every { response.body() } returns null
+        every { charactersResponse.body() } returns null
 
         val result = characterRepository.getCharacters(1234)
 
         assertTrue(result is Outcome.Success)
         assertNull((result as Outcome.Success).value)
         coVerify { characterNetworkService.getCharacters(1234, 0) }
-        verify { response.body() }
+        verify { charactersResponse.body() }
         verify(exactly = 0) { marvelDataWrapper.data }
     }
 
@@ -101,7 +111,7 @@ class CharacterRepositoryTest {
         assertTrue(result is Outcome.Success)
         assertNull((result as Outcome.Success).value)
         coVerify { characterNetworkService.getCharacters(1234, 0) }
-        verify { response.body() }
+        verify { charactersResponse.body() }
         verify { marvelDataWrapper.data }
         verify(exactly = 0) { dataNetworkDto.results }
     }
@@ -115,18 +125,83 @@ class CharacterRepositoryTest {
         assertTrue(result is Outcome.Success)
         assertNull((result as Outcome.Success).value)
         coVerify { characterNetworkService.getCharacters(1234, 0) }
-        verify { response.body() }
+        verify { charactersResponse.body() }
         verify { marvelDataWrapper.data }
         verify { dataNetworkDto.results }
     }
 
     @Test
     fun `getCharacters returns outcome error`() = runBlockingTest {
-        every { response.isSuccessful } returns false
-        every { response.code() } returns 404
-        every { response.message() } returns "errorMessage"
+        every { charactersResponse.isSuccessful } returns false
+        every { charactersResponse.code() } returns 404
+        every { charactersResponse.message() } returns "errorMessage"
 
         val result = characterRepository.getCharacters(1234)
+
+        assertTrue(result is Outcome.Error)
+        val details = assertNotNull((result as Outcome.Error).exceptionDetails)
+        assertEquals(404, details.code)
+        assertEquals("errorMessage", details.cause)
+    }
+
+    @Test
+    fun `getCharacter returns outcome success`() = runBlockingTest {
+
+        val result = characterRepository.getCharacter(1)
+
+        assertTrue(result is Outcome.Success)
+        val characterResult = assertNotNull((result as Outcome.Success).value)
+        assertEquals(character, characterResult)
+    }
+
+    @Test
+    fun `getCharacter with null body returns null`() = runBlockingTest {
+        every { characterResponse.body() } returns null
+
+        val result = characterRepository.getCharacter(1)
+
+        assertTrue(result is Outcome.Success)
+        assertNull((result as Outcome.Success).value)
+        coVerify { characterNetworkService.getCharacter(1) }
+        verify { characterResponse.body() }
+        verify(exactly = 0) { marvelDataWrapper.data }
+    }
+
+    @Test
+    fun `getCharacter with null data returns null`() = runBlockingTest {
+        every { marvelDataWrapper.data } returns null
+
+        val result = characterRepository.getCharacter(1)
+
+        assertTrue(result is Outcome.Success)
+        assertNull((result as Outcome.Success).value)
+        coVerify { characterNetworkService.getCharacter(1) }
+        verify { characterResponse.body() }
+        verify { marvelDataWrapper.data }
+        verify(exactly = 0) { dataNetworkDto.results }
+    }
+
+    @Test
+    fun `getCharacter with null results returns null`() = runBlockingTest {
+        every { dataNetworkDto.results } returns null
+
+        val result = characterRepository.getCharacter(1)
+
+        assertTrue(result is Outcome.Success)
+        assertNull((result as Outcome.Success).value)
+        coVerify { characterNetworkService.getCharacter(1, 1) }
+        verify { characterResponse.body() }
+        verify { marvelDataWrapper.data }
+        verify { dataNetworkDto.results }
+    }
+
+    @Test
+    fun `getCharacter returns outcome error`() = runBlockingTest {
+        every { characterResponse.isSuccessful } returns false
+        every { characterResponse.code() } returns 404
+        every { characterResponse.message() } returns "errorMessage"
+
+        val result = characterRepository.getCharacter(1)
 
         assertTrue(result is Outcome.Error)
         val details = assertNotNull((result as Outcome.Error).exceptionDetails)

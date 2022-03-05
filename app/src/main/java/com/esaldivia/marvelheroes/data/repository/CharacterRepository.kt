@@ -26,11 +26,37 @@ class CharacterRepository @Inject constructor(
                         it.id,
                         it.name,
                         it.description,
-                        it.thumbnail?.let { image -> imageUseCase.getSmallPortraitImageUri(image) }
+                        it.thumbnail?.let { image -> imageUseCase.getLargeLandscapeImageUri(image) }
                     )
                 }
 
                 Outcome.Success(characterList)
+            }
+            is Outcome.Error -> {
+                Outcome.Error(outcome.errorCode, outcome.exception, outcome.exceptionDetails)
+            }
+        }
+    }
+
+    suspend fun getCharacter(
+        characterId: Int,
+        timeStamp: Int = 1
+    ): Outcome<Character?> {
+        val outcome = runNetworkCall {
+            characterNetwork.getCharacter(characterId, timeStamp)
+        }
+
+        return when (outcome) {
+            is Outcome.Success -> {
+                val characterNetworkDto = outcome.value?.data?.results?.get(0) ?: return Outcome.Success(null)
+                val character = Character(
+                    characterNetworkDto.id,
+                    characterNetworkDto.name,
+                    characterNetworkDto.description,
+                    characterNetworkDto.thumbnail?.let { image ->
+                        imageUseCase.getLargeLandscapeImageUri(image)
+                    })
+                Outcome.Success(character)
             }
             is Outcome.Error -> {
                 Outcome.Error(outcome.errorCode, outcome.exception, outcome.exceptionDetails)

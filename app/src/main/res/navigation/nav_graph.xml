@@ -10,4 +10,10 @@
         android:name="com.esaldivia.marvelheroes.ui.character.CharacterListFragment"
         android:label="CharacterListFragment"
         tools:layout="@layout/fragment_character_list"/>
+
+    <fragment
+        android:id="@+id/characterDetailFragment"
+        android:name="com.esaldivia.marvelheroes.ui.character.CharacterDetailFragment"
+        android:label="CharacterDetailFragment"
+        tools:layout="@layout/fragment_character_detail"/>
 </navigation>

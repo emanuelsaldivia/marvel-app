@@ -9,7 +9,7 @@ import com.esaldivia.marvelheroes.R
 import com.esaldivia.marvelheroes.data.model.character.Character
 import com.esaldivia.marvelheroes.databinding.CharacterItemLayoutBinding
 
-class CharacterAdapter(private val characterList: List<Character>) :
+class CharacterAdapter(private val characterList: List<Character>, private val onClick: (character: Character) -> Unit) :
     RecyclerView.Adapter<CharacterAdapter.CharacterViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CharacterViewHolder {
@@ -20,7 +20,7 @@ class CharacterAdapter(private val characterList: List<Character>) :
     }
 
     override fun onBindViewHolder(holder: CharacterViewHolder, position: Int) {
-        holder.bind(characterList[position])
+        holder.bind(characterList[position], onClick)
     }
 
     override fun getItemCount(): Int {
@@ -30,7 +30,7 @@ class CharacterAdapter(private val characterList: List<Character>) :
     class CharacterViewHolder(private val binding: CharacterItemLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(character: Character) {
+        fun bind(character: Character, onClick: (character: Character) -> Unit) {
             binding.itemCharName.text = character.name
 
             val uri = character.thumbnailUrl?.toUri()?.buildUpon()?.scheme("https")?.build() ?: ""
@@ -39,6 +39,8 @@ class CharacterAdapter(private val characterList: List<Character>) :
                 .load(uri)
                 .error(R.drawable.marvel_logo)
                 .into(binding.itemCharImg)
+
+            binding.root.setOnClickListener { onClick(character) }
         }
     }
 }

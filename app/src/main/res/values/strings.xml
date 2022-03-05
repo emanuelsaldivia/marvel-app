@@ -3,5 +3,9 @@
     <string name="character_thumbnail_placeholder">character thumbnail</string>
     <string name="name_placeholder">John Doe</string>
     <string name="description">Description</string>
-    <string name="description_unavailable">Description unavailable</string>
+    <string name="description_not_available">Description not available</string>
+    <string name="comics">Comics</string>
+    <string name="series">Series</string>
+    <string name="stories">Stories</string>
+    <string name="events">Events</string>
 </resources>

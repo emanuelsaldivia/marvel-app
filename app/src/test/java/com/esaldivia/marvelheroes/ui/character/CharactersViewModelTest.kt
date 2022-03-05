@@ -31,8 +31,10 @@ import toothpick.ktp.binding.module
 class CharactersViewModelTest : BaseTest() {
     private lateinit var charactersViewModel: CharactersViewModel
     private lateinit var characterRepository: CharacterRepository
-    private lateinit var observer: Observer<Resource<List<Character>?>>
-    private val characterList: List<Character> = listOf(Character(1, "name", "description", "path"))
+    private lateinit var listObserver: Observer<Resource<List<Character>?>>
+    private lateinit var characterObserver: Observer<Resource<Character?>>
+    private val character = Character(1, "name", "description", "path")
+    private val characterList: List<Character> = listOf(character)
 
     @Rule
     @JvmField
@@ -41,7 +43,8 @@ class CharactersViewModelTest : BaseTest() {
     @Before
     fun setUp() {
         characterRepository = mockk()
-        observer = mockk(relaxed = true)
+        listObserver = mockk(relaxed = true)
+        characterObserver = mockk(relaxed = true)
 
         KTP.openMarvelScope()
             .installTestModules(TestDispatchersModule(),
@@ -59,12 +62,12 @@ class CharactersViewModelTest : BaseTest() {
             every { value } returns characterList
         }
         coEvery { characterRepository.getCharacters(any(), any()) } returns outcome
-        charactersViewModel.charactersListLiveData.observeForever(observer)
+        charactersViewModel.charactersListLiveData.observeForever(listObserver)
 
         charactersViewModel.getCharacterList()
 
         verify {
-            observer.onChanged(withArg {
+            listObserver.onChanged(withArg {
                 assertTrue(it is Resource.Success)
                 it as Resource.Success
                 assertEquals(characterList, it.value)
@@ -79,12 +82,12 @@ class CharactersViewModelTest : BaseTest() {
             every { value } returns characterList
         }
         coEvery { characterRepository.getCharacters(any(), any()) } returns outcome
-        charactersViewModel.charactersListLiveData.observeForever(observer)
+        charactersViewModel.charactersListLiveData.observeForever(listObserver)
 
         charactersViewModel.getCharacterList()
 
         verify {
-            observer.onChanged(withArg {
+            listObserver.onChanged(withArg {
                 assertTrue(it is Resource.Loading)
             })
         }
@@ -97,12 +100,68 @@ class CharactersViewModelTest : BaseTest() {
             every { exceptionDetails } returns NetworkCallException(400, expectedMessage)
         }
         coEvery { characterRepository.getCharacters(any(), any()) } returns outcome
-        charactersViewModel.charactersListLiveData.observeForever(observer)
+        charactersViewModel.charactersListLiveData.observeForever(listObserver)
 
         charactersViewModel.getCharacterList()
 
         verify {
-            observer.onChanged(withArg {
+            listObserver.onChanged(withArg {
+                assertTrue(it is Resource.Error)
+                it as Resource.Error
+                assertEquals(expectedMessage, it.errorMessage)
+            })
+        }
+    }
+
+    @Test
+    fun `getCharacter return Resource success`() {
+        val outcome: Outcome.Success<Character?> = mockk {
+            every { value } returns character
+        }
+        coEvery { characterRepository.getCharacter(any(), any()) } returns outcome
+        charactersViewModel.characterLiveData.observeForever(characterObserver)
+
+        charactersViewModel.getCharacter(1)
+
+        verify {
+            characterObserver.onChanged(withArg {
+                assertTrue(it is Resource.Success)
+                it as Resource.Success
+                assertEquals(character, it.value)
+            })
+        }
+    }
+
+    @Test
+    fun `getCharacter return Resource loading`() {
+        val outcome: Outcome.Success<Character?> = mockk {
+            every { value } returns character
+        }
+        coEvery { characterRepository.getCharacter(any(), any()) } returns outcome
+        charactersViewModel.characterLiveData.observeForever(characterObserver)
+
+        charactersViewModel.getCharacter(1)
+
+        verify {
+            characterObserver.onChanged(withArg {
+                assertTrue(it is Resource.Loading)
+            })
+        }
+    }
+
+    @Test
+    fun `getCharacter return Resource error`() {
+        val expectedMessage = "error message"
+        val outcome: Outcome.Error<Character?> = mockk {
+            every { exceptionDetails } returns NetworkCallException(400, expectedMessage)
+        }
+        coEvery { characterRepository.getCharacter(any(), any()) } returns outcome
+        charactersViewModel.characterLiveData.observeForever(characterObserver)
+
+        charactersViewModel.getCharacter(1)
+
+        verify {
+            characterObserver.onChanged(withArg {
                 assertTrue(it is Resource.Error)
                 it as Resource.Error
                 assertEquals(expectedMessage, it.errorMessage)

@@ -16,14 +16,16 @@ import toothpick.ktp.delegate.inject
 
 class CharactersViewModel : ViewModel() {
     private val characterRepository: CharacterRepository by inject()
+    private val _charactersListLiveData = MutableLiveData<Resource<List<Character>?>>()
+    val charactersListLiveData: LiveData<Resource<List<Character>?>>
+        get() = _charactersListLiveData
+    private val _characterLiveData: MutableLiveData<Resource<Character?>> = MutableLiveData()
+    val characterLiveData: LiveData<Resource<Character?>>
+        get() = _characterLiveData
 
     init {
         KTP.openMarvelScope().inject(this)
     }
-
-    private val _charactersListLiveData = MutableLiveData<Resource<List<Character>?>>()
-    val charactersListLiveData: LiveData<Resource<List<Character>?>>
-        get() = _charactersListLiveData
 
     fun getCharacterList() {
         viewModelScope.launch(CoroutineDispatcher.IO){
@@ -36,6 +38,22 @@ class CharactersViewModel : ViewModel() {
                 is Outcome.Error -> {
                     val error = Resource.Error<List<Character>?>(characterOutcome.exceptionDetails?.cause)
                     _charactersListLiveData.postValue(error)
+                }
+            }
+        }
+    }
+
+    fun getCharacter(characterId: Int) {
+        viewModelScope.launch(CoroutineDispatcher.IO) {
+            _characterLiveData.postValue(Resource.Loading())
+            when (val characterOutcome = characterRepository.getCharacter(characterId)) {
+                is Outcome.Success -> {
+                    val characterResource = Resource.Success(characterOutcome.value)
+                    _characterLiveData.postValue(characterResource)
+                }
+                is Outcome.Error -> {
+                    val error = Resource.Error<Character?>(characterOutcome.exceptionDetails?.cause)
+                    _characterLiveData.postValue(error)
                 }
             }
         }

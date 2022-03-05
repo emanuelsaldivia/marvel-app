@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 class ImageUseCase @Inject constructor() {
 
-    fun getSmallPortraitImageUri(image: ImageNetworkDto): String {
+    fun getLargeLandscapeImageUri(image: ImageNetworkDto): String {
         return image.path + "/" + LANDSCAPE_XL + "." + image.extension
     }
 

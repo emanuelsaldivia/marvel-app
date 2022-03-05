@@ -20,7 +20,7 @@ class ImageUseCaseTest : BaseTest() {
     fun `getSmallPortraitImage returns correct paths`() {
         val image = ImageNetworkDto(path, extension)
 
-        val result = imageUseCase.getSmallPortraitImageUri(image)
+        val result = imageUseCase.getLargeLandscapeImageUri(image)
 
         val expected = path + "/" + ImageUseCase.LANDSCAPE_XL + "." + extension
         assertEquals(expected, result)

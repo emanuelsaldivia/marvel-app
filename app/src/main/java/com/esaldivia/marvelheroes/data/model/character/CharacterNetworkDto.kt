@@ -1,6 +1,7 @@
 package com.esaldivia.marvelheroes.data.model.character
 
 import com.esaldivia.marvelheroes.data.model.*
+import com.esaldivia.marvelheroes.data.model.SummaryNetworkDto
 import com.google.gson.annotations.SerializedName
 import java.util.*
 

@@ -10,7 +10,6 @@ import java.io.IOException
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-
 class CharacterNetworkServiceTest : BaseNetworkServiceTest() {
     private lateinit var characterNetworkService: CharacterNetworkService
 
@@ -25,10 +24,10 @@ class CharacterNetworkServiceTest : BaseNetworkServiceTest() {
 
     @Throws(IOException::class)
     @Test
-    fun `getCharactersFromApi returns correct MarvelWrapper`() = runBlocking {
-        enqueueResponse("/MarvelsResponse.json")
+    fun `getCharacters returns correct MarvelWrapper`() = runBlocking {
+        enqueueResponse("/CharactersResponse.json")
 
-        var result = characterNetworkService.getCharactersFromApi().body()
+        var result = characterNetworkService.getCharacters().body()
 
         result = assertNotNull(result)
         assertEquals(200, result.code)
@@ -40,10 +39,10 @@ class CharacterNetworkServiceTest : BaseNetworkServiceTest() {
 
     @Throws(IOException::class)
     @Test
-    fun `getCharactersFromApi returns correct dataNetworkDto`() = runBlocking {
-        enqueueResponse("/MarvelsResponse.json")
+    fun `getCharacters returns correct dataNetworkDto`() = runBlocking {
+        enqueueResponse("/CharactersResponse.json")
 
-        val result = characterNetworkService.getCharactersFromApi().body()
+        val result = characterNetworkService.getCharacters().body()
 
         val data = assertNotNull(result?.data)
         assertEquals(0, data.offset)
@@ -55,10 +54,64 @@ class CharacterNetworkServiceTest : BaseNetworkServiceTest() {
 
     @Throws(IOException::class)
     @Test
-    fun `getCharactersFromApi returns correct characters`() = runBlocking {
-        enqueueResponse("/MarvelsResponse.json")
+    fun `getCharacters returns correct characters`() = runBlocking {
+        enqueueResponse("/CharactersResponse.json")
 
-        val result = characterNetworkService.getCharactersFromApi().body()
+        val result = characterNetworkService.getCharacters().body()
+
+        val character = assertNotNull(result?.data?.results?.get(0))
+        assertEquals(1011334, character.id)
+        assertEquals("3-D Man", character.name)
+        assertEquals("", character.description)
+        val thumbnail = assertNotNull(character.thumbnail)
+        assertEquals("http://i.annihil.us/u/prod/marvel/i/mg/c/e0/535fecbbb9784", thumbnail.path)
+        assertEquals("jpg", thumbnail.extension)
+        assertEquals(
+            "http://gateway.marvel.com/v1/public/characters/1011334",
+            character.resourceUri
+        )
+        assertComics(character)
+        assertSeries(character)
+        assertStories(character)
+        assertEvents(character)
+    }
+
+    @Throws(IOException::class)
+    @Test
+    fun `getCharacter returns correct MarvelWrapper`() = runBlocking {
+        enqueueResponse("/CharacterResponse.json")
+
+        var result = characterNetworkService.getCharacters().body()
+
+        result = assertNotNull(result)
+        assertEquals(200, result.code)
+        assertEquals("Ok", result.status)
+        assertEquals("© 2022 MARVEL", result.copyright)
+        assertEquals("Data provided by Marvel. © 2022 MARVEL", result.attributionText)
+        assertEquals("55342c8b21941bfea4b795ff85633d9063e1da0e", result.eTag)
+    }
+
+    @Throws(IOException::class)
+    @Test
+    fun `getCharacter returns correct dataNetworkDto`() = runBlocking {
+        enqueueResponse("/CharacterResponse.json")
+
+        val result = characterNetworkService.getCharacters().body()
+
+        val data = assertNotNull(result?.data)
+        assertEquals(0, data.offset)
+        assertEquals(20, data.limit)
+        assertEquals(1, data.total)
+        val results = assertNotNull(data.results)
+        assertEquals(data.count, results.size)
+    }
+
+    @Throws(IOException::class)
+    @Test
+    fun `getCharacter returns correct Character`() = runBlocking {
+        enqueueResponse("/CharacterResponse.json")
+
+        val result = characterNetworkService.getCharacter(1011334).body()
 
         val character = assertNotNull(result?.data?.results?.get(0))
         assertEquals(1011334, character.id)

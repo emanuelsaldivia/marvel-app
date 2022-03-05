@@ -4,13 +4,20 @@ import com.esaldivia.marvelheroes.data.model.MarvelDataWrapper
 import com.esaldivia.marvelheroes.data.model.character.CharacterNetworkDto
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface CharacterNetworkService {
 
     @GET("/v1/public/characters")
-    suspend fun getCharactersFromApi(
+    suspend fun getCharacters(
         @Query("ts") timeStamp: Int = 1,
         @Query("offset") offset: Int = 0
+    ): Response<MarvelDataWrapper<CharacterNetworkDto>>
+
+    @GET("/v1/public/characters/{characterId}")
+    suspend fun getCharacter(
+        @Path("characterId") characterId: Int,
+        @Query("ts") timeStamp: Int = 1
     ): Response<MarvelDataWrapper<CharacterNetworkDto>>
 }

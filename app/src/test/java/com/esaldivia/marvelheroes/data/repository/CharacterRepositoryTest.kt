@@ -43,7 +43,7 @@ class CharacterRepositoryTest {
         marvelDataWrapper = mockDataWrapper(dataNetworkDto)
         response = mockResponse(marvelDataWrapper)
         characterNetworkService = mockk {
-            coEvery { getCharactersFromApi(any(), any()) } returns response
+            coEvery { getCharacters(any(), any()) } returns response
         }
         imageUseCase = mockk {
             every { getSmallPortraitImageUri(any()) } returns "path"
@@ -67,7 +67,7 @@ class CharacterRepositoryTest {
 
         assertTrue(result is Outcome.Success)
         assertEquals(characterList, (result as Outcome.Success).value)
-        coVerify { characterNetworkService.getCharactersFromApi(1234, 0) }
+        coVerify { characterNetworkService.getCharacters(1234, 0) }
     }
 
     @Test
@@ -76,7 +76,7 @@ class CharacterRepositoryTest {
 
         assertTrue(result is Outcome.Success)
         assertEquals(characterList, (result as Outcome.Success).value)
-        coVerify { characterNetworkService.getCharactersFromApi(1234, 1) }
+        coVerify { characterNetworkService.getCharacters(1234, 1) }
     }
 
     @Test
@@ -87,7 +87,7 @@ class CharacterRepositoryTest {
 
         assertTrue(result is Outcome.Success)
         assertNull((result as Outcome.Success).value)
-        coVerify { characterNetworkService.getCharactersFromApi(1234, 0) }
+        coVerify { characterNetworkService.getCharacters(1234, 0) }
         verify { response.body() }
         verify(exactly = 0) { marvelDataWrapper.data }
     }
@@ -100,7 +100,7 @@ class CharacterRepositoryTest {
 
         assertTrue(result is Outcome.Success)
         assertNull((result as Outcome.Success).value)
-        coVerify { characterNetworkService.getCharactersFromApi(1234, 0) }
+        coVerify { characterNetworkService.getCharacters(1234, 0) }
         verify { response.body() }
         verify { marvelDataWrapper.data }
         verify(exactly = 0) { dataNetworkDto.results }
@@ -114,7 +114,7 @@ class CharacterRepositoryTest {
 
         assertTrue(result is Outcome.Success)
         assertNull((result as Outcome.Success).value)
-        coVerify { characterNetworkService.getCharactersFromApi(1234, 0) }
+        coVerify { characterNetworkService.getCharacters(1234, 0) }
         verify { response.body() }
         verify { marvelDataWrapper.data }
         verify { dataNetworkDto.results }

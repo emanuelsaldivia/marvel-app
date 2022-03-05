@@ -16,7 +16,7 @@ class CharacterRepository @Inject constructor(
         offset: Int = 0
     ): Outcome<List<Character>?> {
         val outcome = runNetworkCall {
-            characterNetwork.getCharactersFromApi(timeStamp, offset)
+            characterNetwork.getCharacters(timeStamp, offset)
         }
 
         return when (outcome) {

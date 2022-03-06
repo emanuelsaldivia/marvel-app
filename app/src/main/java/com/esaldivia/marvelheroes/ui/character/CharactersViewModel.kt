@@ -40,14 +40,18 @@ class CharactersViewModel : ViewModel() {
             _charactersListLiveData.postValue(Resource.Loading())
             val timeStamp = System.currentTimeMillis()
             val hash = securityUseCase.md5Encryption(timeStamp)
-            when (val characterOutcome = characterRepository.getCharacters(timeStamp = timeStamp, hash = hash)) {
+            when (val characterOutcome =
+                characterRepository.getCharacters(timeStamp = timeStamp, hash = hash)) {
                 is Outcome.Success -> {
                     val characterListResource = Resource.Success(characterOutcome.value)
                     _charactersListLiveData.postValue(characterListResource)
                 }
                 is Outcome.Error -> {
                     val error =
-                        Resource.Error<List<Character>?>(characterOutcome.exceptionDetails?.cause)
+                        Resource.Error<List<Character>?>(characterOutcome.exceptionDetails?.code,
+                            characterOutcome.exceptionDetails?.cause
+                                ?: characterOutcome.exception?.message
+                        )
                     _charactersListLiveData.postValue(error)
                 }
             }
@@ -59,13 +63,18 @@ class CharactersViewModel : ViewModel() {
             _characterLiveData.postValue(Resource.Loading())
             val timeStamp = System.currentTimeMillis()
             val hash = securityUseCase.md5Encryption(timeStamp)
-            when (val characterOutcome = characterRepository.getCharacter(characterId, timeStamp, hash)) {
+            when (val characterOutcome =
+                characterRepository.getCharacter(characterId, timeStamp, hash)) {
                 is Outcome.Success -> {
                     val characterResource = Resource.Success(characterOutcome.value)
                     _characterLiveData.postValue(characterResource)
                 }
                 is Outcome.Error -> {
-                    val error = Resource.Error<Character?>(characterOutcome.exceptionDetails?.cause)
+                    val error =
+                        Resource.Error<Character?>(characterOutcome.exceptionDetails?.code,
+                            characterOutcome.exceptionDetails?.cause
+                                ?: characterOutcome.exception?.message
+                        )
                     _characterLiveData.postValue(error)
                 }
             }

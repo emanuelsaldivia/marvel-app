@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -42,11 +43,12 @@ class CharacterListFragment : Fragment() {
             .installViewModelBinding<CharactersViewModel>(this)
             .closeOnDestroy(this)
             .inject(this)
+
+        charactersViewModel.getCharacterList()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        charactersViewModel.getCharacterList()
 
         charactersViewModel.charactersListLiveData.observe(viewLifecycleOwner) { resource ->
             when (resource) {
@@ -59,8 +61,7 @@ class CharacterListFragment : Fragment() {
                 is Resource.Error -> {
                     binding.progressBar.visibility = View.GONE
                     binding.characterRecyclerView.visibility = View.GONE
-                    // TODO
-                    resource.errorMessage
+                    Toast.makeText(context, resource.errorMessage, Toast.LENGTH_LONG).show()
                 }
                 is Resource.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE

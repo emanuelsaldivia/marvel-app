@@ -50,6 +50,10 @@ class CharacterListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.swipeRefresh.setOnRefreshListener {
+            charactersViewModel.getCharacterList()
+            binding.swipeRefresh.isRefreshing = false
+        }
         charactersViewModel.charactersListLiveData.observe(viewLifecycleOwner) { resource ->
             when (resource) {
                 is Resource.Success -> {

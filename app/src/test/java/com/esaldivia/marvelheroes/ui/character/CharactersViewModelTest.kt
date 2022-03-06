@@ -61,7 +61,7 @@ class CharactersViewModelTest : BaseTest() {
         val outcome: Outcome.Success<List<Character>?> = mockk {
             every { value } returns characterList
         }
-        coEvery { characterRepository.getCharacters(any(), any()) } returns outcome
+        coEvery { characterRepository.getCharacters(any(), any(), any()) } returns outcome
         charactersViewModel.charactersListLiveData.observeForever(listObserver)
 
         charactersViewModel.getCharacterList()
@@ -81,7 +81,7 @@ class CharactersViewModelTest : BaseTest() {
         val outcome: Outcome.Success<List<Character>?> = mockk {
             every { value } returns characterList
         }
-        coEvery { characterRepository.getCharacters(any(), any()) } returns outcome
+        coEvery { characterRepository.getCharacters(any(), any(), any()) } returns outcome
         charactersViewModel.charactersListLiveData.observeForever(listObserver)
 
         charactersViewModel.getCharacterList()
@@ -99,7 +99,7 @@ class CharactersViewModelTest : BaseTest() {
         val outcome: Outcome.Error<List<Character>?> = mockk {
             every { exceptionDetails } returns NetworkCallException(400, expectedMessage)
         }
-        coEvery { characterRepository.getCharacters(any(), any()) } returns outcome
+        coEvery { characterRepository.getCharacters(any(), any(), any()) } returns outcome
         charactersViewModel.charactersListLiveData.observeForever(listObserver)
 
         charactersViewModel.getCharacterList()
@@ -118,7 +118,7 @@ class CharactersViewModelTest : BaseTest() {
         val outcome: Outcome.Success<Character?> = mockk {
             every { value } returns character
         }
-        coEvery { characterRepository.getCharacter(any(), any()) } returns outcome
+        coEvery { characterRepository.getCharacter(any(), any(), any()) } returns outcome
         charactersViewModel.characterLiveData.observeForever(characterObserver)
 
         charactersViewModel.getCharacter(1)
@@ -137,7 +137,7 @@ class CharactersViewModelTest : BaseTest() {
         val outcome: Outcome.Success<Character?> = mockk {
             every { value } returns character
         }
-        coEvery { characterRepository.getCharacter(any(), any()) } returns outcome
+        coEvery { characterRepository.getCharacter(any(), any(), any()) } returns outcome
         charactersViewModel.characterLiveData.observeForever(characterObserver)
 
         charactersViewModel.getCharacter(1)
@@ -155,7 +155,7 @@ class CharactersViewModelTest : BaseTest() {
         val outcome: Outcome.Error<Character?> = mockk {
             every { exceptionDetails } returns NetworkCallException(400, expectedMessage)
         }
-        coEvery { characterRepository.getCharacter(any(), any()) } returns outcome
+        coEvery { characterRepository.getCharacter(any(), any(), any()) } returns outcome
         charactersViewModel.characterLiveData.observeForever(characterObserver)
 
         charactersViewModel.getCharacter(1)

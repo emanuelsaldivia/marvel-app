@@ -21,8 +21,8 @@ android {
     buildTypes {
         debug {
             buildConfigField("String", "BASE_URL", "\"https://gateway.marvel.com\"")
-            buildConfigField("String", "apikey", "\"c2b3501b22712f468d8d7cccbf9f070c\"")
-            buildConfigField("String", "hash", "\"a571667fd08fbda87786723c10705cff\"")
+            buildConfigField("String", "publicKey", "\"c2b3501b22712f468d8d7cccbf9f070c\"")
+            buildConfigField("String", "privateKey", "\"b0a387320dfd0f339400fccc21fc701431521e2c\"")
 
         }
         release {

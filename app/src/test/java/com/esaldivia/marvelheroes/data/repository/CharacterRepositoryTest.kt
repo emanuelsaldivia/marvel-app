@@ -52,8 +52,8 @@ class CharacterRepositoryTest {
             every { isSuccessful } returns true
         }
         characterNetworkService = mockk {
-            coEvery { getCharacters(any(), any()) } returns charactersResponse
-            coEvery { getCharacter(any(), any()) } returns characterResponse
+            coEvery { getCharacters(any(), any(), any()) } returns charactersResponse
+            coEvery { getCharacter(any(), any(), any()) } returns characterResponse
         }
         imageUseCase = mockk {
             every { getLargeLandscapeImageUri(any()) } returns "path"
@@ -73,31 +73,31 @@ class CharacterRepositoryTest {
 
     @Test
     fun `getCharacters makes correct network call with default values`() = runBlockingTest {
-        val result = characterRepository.getCharacters(1234)
+        val result = characterRepository.getCharacters(1234, hash = "hash")
 
         assertTrue(result is Outcome.Success)
         assertEquals(characterList, (result as Outcome.Success).value)
-        coVerify { characterNetworkService.getCharacters(1234, 0) }
+        coVerify { characterNetworkService.getCharacters(1234, 0, "hash") }
     }
 
     @Test
     fun `getCharacters makes correct network call`() = runBlockingTest {
-        val result = characterRepository.getCharacters(1234, 1)
+        val result = characterRepository.getCharacters(1234, 1,"hash")
 
         assertTrue(result is Outcome.Success)
         assertEquals(characterList, (result as Outcome.Success).value)
-        coVerify { characterNetworkService.getCharacters(1234, 1) }
+        coVerify { characterNetworkService.getCharacters(1234, 1, "hash") }
     }
 
     @Test
     fun `getCharacters with null body returns null`() = runBlockingTest {
         every { charactersResponse.body() } returns null
 
-        val result = characterRepository.getCharacters(1234)
+        val result = characterRepository.getCharacters(1234, hash = "hash")
 
         assertTrue(result is Outcome.Success)
         assertNull((result as Outcome.Success).value)
-        coVerify { characterNetworkService.getCharacters(1234, 0) }
+        coVerify { characterNetworkService.getCharacters(1234, 0, "hash") }
         verify { charactersResponse.body() }
         verify(exactly = 0) { marvelDataWrapper.data }
     }
@@ -106,11 +106,11 @@ class CharacterRepositoryTest {
     fun `getCharacters with null data returns null`() = runBlockingTest {
         every { marvelDataWrapper.data } returns null
 
-        val result = characterRepository.getCharacters(1234)
+        val result = characterRepository.getCharacters(1234, hash = "hash")
 
         assertTrue(result is Outcome.Success)
         assertNull((result as Outcome.Success).value)
-        coVerify { characterNetworkService.getCharacters(1234, 0) }
+        coVerify { characterNetworkService.getCharacters(1234, 0, "hash") }
         verify { charactersResponse.body() }
         verify { marvelDataWrapper.data }
         verify(exactly = 0) { dataNetworkDto.results }
@@ -120,11 +120,11 @@ class CharacterRepositoryTest {
     fun `getCharacters with null results returns null`() = runBlockingTest {
         every { dataNetworkDto.results } returns null
 
-        val result = characterRepository.getCharacters(1234)
+        val result = characterRepository.getCharacters(1234, hash = "hash")
 
         assertTrue(result is Outcome.Success)
         assertNull((result as Outcome.Success).value)
-        coVerify { characterNetworkService.getCharacters(1234, 0) }
+        coVerify { characterNetworkService.getCharacters(1234, 0, "hash") }
         verify { charactersResponse.body() }
         verify { marvelDataWrapper.data }
         verify { dataNetworkDto.results }
@@ -136,7 +136,7 @@ class CharacterRepositoryTest {
         every { charactersResponse.code() } returns 404
         every { charactersResponse.message() } returns "errorMessage"
 
-        val result = characterRepository.getCharacters(1234)
+        val result = characterRepository.getCharacters(1234, hash = "hash")
 
         assertTrue(result is Outcome.Error)
         val details = assertNotNull((result as Outcome.Error).exceptionDetails)
@@ -147,7 +147,7 @@ class CharacterRepositoryTest {
     @Test
     fun `getCharacter returns outcome success`() = runBlockingTest {
 
-        val result = characterRepository.getCharacter(1)
+        val result = characterRepository.getCharacter(1, 1, "hash")
 
         assertTrue(result is Outcome.Success)
         val characterResult = assertNotNull((result as Outcome.Success).value)
@@ -158,11 +158,11 @@ class CharacterRepositoryTest {
     fun `getCharacter with null body returns null`() = runBlockingTest {
         every { characterResponse.body() } returns null
 
-        val result = characterRepository.getCharacter(1)
+        val result = characterRepository.getCharacter(1, 1, "hash")
 
         assertTrue(result is Outcome.Success)
         assertNull((result as Outcome.Success).value)
-        coVerify { characterNetworkService.getCharacter(1) }
+        coVerify { characterNetworkService.getCharacter(1, 1, "hash") }
         verify { characterResponse.body() }
         verify(exactly = 0) { marvelDataWrapper.data }
     }
@@ -171,11 +171,11 @@ class CharacterRepositoryTest {
     fun `getCharacter with null data returns null`() = runBlockingTest {
         every { marvelDataWrapper.data } returns null
 
-        val result = characterRepository.getCharacter(1)
+        val result = characterRepository.getCharacter(1, 1, "hash")
 
         assertTrue(result is Outcome.Success)
         assertNull((result as Outcome.Success).value)
-        coVerify { characterNetworkService.getCharacter(1) }
+        coVerify { characterNetworkService.getCharacter(1, 1, "hash") }
         verify { characterResponse.body() }
         verify { marvelDataWrapper.data }
         verify(exactly = 0) { dataNetworkDto.results }
@@ -185,11 +185,11 @@ class CharacterRepositoryTest {
     fun `getCharacter with null results returns null`() = runBlockingTest {
         every { dataNetworkDto.results } returns null
 
-        val result = characterRepository.getCharacter(1)
+        val result = characterRepository.getCharacter(1, 1, "hash")
 
         assertTrue(result is Outcome.Success)
         assertNull((result as Outcome.Success).value)
-        coVerify { characterNetworkService.getCharacter(1, 1) }
+        coVerify { characterNetworkService.getCharacter(1, 1, "hash") }
         verify { characterResponse.body() }
         verify { marvelDataWrapper.data }
         verify { dataNetworkDto.results }
@@ -201,7 +201,7 @@ class CharacterRepositoryTest {
         every { characterResponse.code() } returns 404
         every { characterResponse.message() } returns "errorMessage"
 
-        val result = characterRepository.getCharacter(1)
+        val result = characterRepository.getCharacter(1, 1, "hash")
 
         assertTrue(result is Outcome.Error)
         val details = assertNotNull((result as Outcome.Error).exceptionDetails)

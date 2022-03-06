@@ -39,8 +39,7 @@ class NetworkModule : Module() {
                 chain.request()
                     .url
                     .newBuilder()
-                    .addQueryParameter("apikey", BuildConfig.apikey)
-                    .addQueryParameter("hash", BuildConfig.hash)
+                    .addQueryParameter("apikey", BuildConfig.publicKey)
                     .build()
             ).build()
         return@Interceptor chain.proceed(request)

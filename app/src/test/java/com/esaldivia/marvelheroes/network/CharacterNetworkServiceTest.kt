@@ -27,7 +27,7 @@ class CharacterNetworkServiceTest : BaseNetworkServiceTest() {
     fun `getCharacters returns correct MarvelWrapper`() = runBlocking {
         enqueueResponse("/CharactersResponse.json")
 
-        var result = characterNetworkService.getCharacters().body()
+        var result = characterNetworkService.getCharacters(hash = "hash").body()
 
         result = assertNotNull(result)
         assertEquals(200, result.code)
@@ -42,7 +42,7 @@ class CharacterNetworkServiceTest : BaseNetworkServiceTest() {
     fun `getCharacters returns correct dataNetworkDto`() = runBlocking {
         enqueueResponse("/CharactersResponse.json")
 
-        val result = characterNetworkService.getCharacters().body()
+        val result = characterNetworkService.getCharacters(hash = "hash").body()
 
         val data = assertNotNull(result?.data)
         assertEquals(0, data.offset)
@@ -57,7 +57,7 @@ class CharacterNetworkServiceTest : BaseNetworkServiceTest() {
     fun `getCharacters returns correct characters`() = runBlocking {
         enqueueResponse("/CharactersResponse.json")
 
-        val result = characterNetworkService.getCharacters().body()
+        val result = characterNetworkService.getCharacters(hash = "hash").body()
 
         val character = assertNotNull(result?.data?.results?.get(0))
         assertEquals(1011334, character.id)
@@ -81,7 +81,7 @@ class CharacterNetworkServiceTest : BaseNetworkServiceTest() {
     fun `getCharacter returns correct MarvelWrapper`() = runBlocking {
         enqueueResponse("/CharacterResponse.json")
 
-        var result = characterNetworkService.getCharacters().body()
+        var result = characterNetworkService.getCharacters(hash = "hash").body()
 
         result = assertNotNull(result)
         assertEquals(200, result.code)
@@ -96,7 +96,7 @@ class CharacterNetworkServiceTest : BaseNetworkServiceTest() {
     fun `getCharacter returns correct dataNetworkDto`() = runBlocking {
         enqueueResponse("/CharacterResponse.json")
 
-        val result = characterNetworkService.getCharacters().body()
+        val result = characterNetworkService.getCharacters(hash = "hash").body()
 
         val data = assertNotNull(result?.data)
         assertEquals(0, data.offset)
@@ -111,7 +111,7 @@ class CharacterNetworkServiceTest : BaseNetworkServiceTest() {
     fun `getCharacter returns correct Character`() = runBlocking {
         enqueueResponse("/CharacterResponse.json")
 
-        val result = characterNetworkService.getCharacter(1011334).body()
+        val result = characterNetworkService.getCharacter(1011334, 1, "hash").body()
 
         val character = assertNotNull(result?.data?.results?.get(0))
         assertEquals(1011334, character.id)

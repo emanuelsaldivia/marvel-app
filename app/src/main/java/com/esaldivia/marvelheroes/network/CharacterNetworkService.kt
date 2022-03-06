@@ -11,13 +11,15 @@ interface CharacterNetworkService {
 
     @GET("/v1/public/characters")
     suspend fun getCharacters(
-        @Query("ts") timeStamp: Int = 1,
-        @Query("offset") offset: Int = 0
+        @Query("ts") timeStamp: Long = 1,
+        @Query("offset") offset: Int = 0,
+        @Query("hash") hash: String
     ): Response<MarvelDataWrapper<CharacterNetworkDto>>
 
     @GET("/v1/public/characters/{characterId}")
     suspend fun getCharacter(
         @Path("characterId") characterId: Int,
-        @Query("ts") timeStamp: Int = 1
+        @Query("ts") timeStamp: Long = 1,
+        @Query("hash") hash: String
     ): Response<MarvelDataWrapper<CharacterNetworkDto>>
 }

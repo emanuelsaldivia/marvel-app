@@ -10,8 +10,11 @@ import com.esaldivia.marvelheroes.data.repository.CharacterRepository
 import com.esaldivia.marvelheroes.di.CoroutineDispatcher
 import com.esaldivia.marvelheroes.network.Outcome
 import com.esaldivia.marvelheroes.openMarvelScope
+import com.esaldivia.marvelheroes.usecase.SecurityUseCase
 import kotlinx.coroutines.launch
 import toothpick.ktp.KTP
+import toothpick.ktp.binding.bind
+import toothpick.ktp.binding.module
 import toothpick.ktp.delegate.inject
 
 class CharactersViewModel : ViewModel() {
@@ -22,21 +25,29 @@ class CharactersViewModel : ViewModel() {
     private val _characterLiveData: MutableLiveData<Resource<Character?>> = MutableLiveData()
     val characterLiveData: LiveData<Resource<Character?>>
         get() = _characterLiveData
+    val securityUseCase: SecurityUseCase by inject()
 
     init {
-        KTP.openMarvelScope().inject(this)
+        KTP.openMarvelScope()
+            .installModules(module {
+                bind<SecurityUseCase>().toInstance(SecurityUseCase())
+            })
+            .inject(this)
     }
 
     fun getCharacterList() {
-        viewModelScope.launch(CoroutineDispatcher.IO){
+        viewModelScope.launch(CoroutineDispatcher.IO) {
             _charactersListLiveData.postValue(Resource.Loading())
-            when (val characterOutcome = characterRepository.getCharacters()) {
+            val timeStamp = System.currentTimeMillis()
+            val hash = securityUseCase.md5Encryption(timeStamp)
+            when (val characterOutcome = characterRepository.getCharacters(timeStamp = timeStamp, hash = hash)) {
                 is Outcome.Success -> {
                     val characterListResource = Resource.Success(characterOutcome.value)
                     _charactersListLiveData.postValue(characterListResource)
                 }
                 is Outcome.Error -> {
-                    val error = Resource.Error<List<Character>?>(characterOutcome.exceptionDetails?.cause)
+                    val error =
+                        Resource.Error<List<Character>?>(characterOutcome.exceptionDetails?.cause)
                     _charactersListLiveData.postValue(error)
                 }
             }
@@ -46,7 +57,9 @@ class CharactersViewModel : ViewModel() {
     fun getCharacter(characterId: Int) {
         viewModelScope.launch(CoroutineDispatcher.IO) {
             _characterLiveData.postValue(Resource.Loading())
-            when (val characterOutcome = characterRepository.getCharacter(characterId)) {
+            val timeStamp = System.currentTimeMillis()
+            val hash = securityUseCase.md5Encryption(timeStamp)
+            when (val characterOutcome = characterRepository.getCharacter(characterId, timeStamp, hash)) {
                 is Outcome.Success -> {
                     val characterResource = Resource.Success(characterOutcome.value)
                     _characterLiveData.postValue(characterResource)

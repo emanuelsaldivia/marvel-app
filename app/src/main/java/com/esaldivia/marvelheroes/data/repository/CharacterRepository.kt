@@ -12,11 +12,12 @@ class CharacterRepository @Inject constructor(
 ) : NetworkRepository() {
 
     suspend fun getCharacters(
-        timeStamp: Int = 1,
-        offset: Int = 0
+        timeStamp: Long = 1,
+        offset: Int = 0,
+        hash: String
     ): Outcome<List<Character>?> {
         val outcome = runNetworkCall {
-            characterNetwork.getCharacters(timeStamp, offset)
+            characterNetwork.getCharacters(timeStamp, offset, hash)
         }
 
         return when (outcome) {
@@ -40,10 +41,11 @@ class CharacterRepository @Inject constructor(
 
     suspend fun getCharacter(
         characterId: Int,
-        timeStamp: Int = 1
+        timeStamp: Long = 1,
+        hash: String
     ): Outcome<Character?> {
         val outcome = runNetworkCall {
-            characterNetwork.getCharacter(characterId, timeStamp)
+            characterNetwork.getCharacter(characterId, timeStamp, hash)
         }
 
         return when (outcome) {

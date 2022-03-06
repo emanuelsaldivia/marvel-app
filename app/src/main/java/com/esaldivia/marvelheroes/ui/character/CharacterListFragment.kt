@@ -44,22 +44,27 @@ class CharacterListFragment : Fragment() {
             .inject(this)
     }
 
-    override fun onResume() {
-        super.onResume()
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         charactersViewModel.getCharacterList()
 
-        charactersViewModel.charactersListLiveData.observe(this) { resource ->
+        charactersViewModel.charactersListLiveData.observe(viewLifecycleOwner) { resource ->
             when (resource) {
                 is Resource.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    binding.characterRecyclerView.visibility = View.VISIBLE
                     characterAdapter = resource.value?.let { CharacterAdapter(it, this::onClick) }
                     binding.characterRecyclerView.adapter = characterAdapter
                 }
                 is Resource.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                    binding.characterRecyclerView.visibility = View.GONE
+                    // TODO
                     resource.errorMessage
                 }
                 is Resource.Loading -> {
-                    // TODO
+                    binding.progressBar.visibility = View.VISIBLE
+                    binding.characterRecyclerView.visibility = View.GONE
                 }
             }
         }

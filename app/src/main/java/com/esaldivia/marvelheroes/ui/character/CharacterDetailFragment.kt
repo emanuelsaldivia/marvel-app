@@ -50,6 +50,8 @@ class CharacterDetailFragment : Fragment() {
         charactersViewModel.characterLiveData.observe(viewLifecycleOwner) {
             when (it) {
                 is Resource.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    binding.characterDetailView.visibility = View.VISIBLE
                     binding.detailsNameTv.text = it.value?.name
                     val description = if (!it.value?.description.isNullOrEmpty()) {
                         it.value?.description
@@ -69,10 +71,12 @@ class CharacterDetailFragment : Fragment() {
                     }
                 }
                 is Resource.Error -> {
+                    binding.progressBar.visibility = View.GONE
                     // TODO
                 }
                 is Resource.Loading -> {
-                    // TODO
+                    binding.progressBar.visibility = View.VISIBLE
+                    binding.characterDetailView.visibility = View.GONE
                 }
             }
         }
